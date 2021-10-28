@@ -1,8 +1,19 @@
 {
   "name": "hello-graphql",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
   "repository": "https://github.com/github:/brunomendoza/hello-graphql.git",
   "author": "Bruno Mendoza <hola@brunomendoza.es>",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1",
+    "express-graphql": "^0.12.0",
+    "graphql": "^15.7.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.14"
+  }
 }
