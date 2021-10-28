@@ -1,0 +1,8 @@
+{
+  "name": "hello-graphql",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/github:/brunomendoza/hello-graphql.git",
+  "author": "Bruno Mendoza <hola@brunomendoza.es>",
+  "license": "MIT"
+}
