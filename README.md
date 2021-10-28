@@ -1,1 +1,1 @@
-Hello GraphQl
+Hello GraphQL
