@@ -2,7 +2,8 @@ const {
   GraphQLObjectType,
   GraphQLString,
   GraphQLSchema,
-  GraphQLID
+  GraphQLID,
+  GraphQLList
 } = require('graphql')
 
 const owners = [
@@ -22,17 +23,20 @@ const pets = [
   {
     id: "1",
     name: "Tobby",
-    genre: "male"
+    genre: "male",
+    ownerId: "1"
   },
   {
     id: "2",
     name: "Jane",
-    genre: "female"
+    genre: "female",
+    ownerId: "2"
   },
   {
     id: "2",
     name: "Hercules",
-    genre: "male"
+    genre: "male",
+    ownerId: "1"
   },
 ]
 
@@ -41,7 +45,13 @@ const PetType = new GraphQLObjectType({
   fields: () => ({
     id: { type: GraphQLID },
     name: { type: GraphQLString },
-    genre: { type: GraphQLString }
+    genre: { type: GraphQLString },
+    owner: {
+      type: OwnerType,
+      resolve(parent, args) {
+        return owners.find(owner => owner.id === parent.ownerId)
+      }
+    }
   })
 })
 
@@ -50,7 +60,13 @@ const OwnerType = new GraphQLObjectType({
   fields: () => ({
     id: { type: GraphQLID },
     firstName: { type: GraphQLString },
-    lastName: { type: GraphQLString }
+    lastName: { type: GraphQLString },
+    pets: {
+      type: new GraphQLList(PetType),
+      resolve(parent, args) {
+        return pets.filter(pet => pet.ownerId === parent.id)
+      }
+    }
   })
 })
 
