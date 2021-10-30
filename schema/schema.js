@@ -1,7 +1,8 @@
 const {
   GraphQLObjectType,
   GraphQLString,
-  GraphQLSchema
+  GraphQLSchema,
+  GraphQLID
 } = require('graphql')
 
 const pets = [
@@ -25,7 +26,7 @@ const pets = [
 const PetType = new GraphQLObjectType({
   name: 'Pet',
   fields: () => ({
-    id: { type: GraphQLString },
+    id: { type: GraphQLID },
     name: { type: GraphQLString },
     genre: { type: GraphQLString }
   })
@@ -36,8 +37,9 @@ const RootQuery = new GraphQLObjectType({
   fields: {
     pet: {
       type: PetType,
-      args: { id: { type: GraphQLString } },
+      args: { id: { type: GraphQLID } },
       resolve(parent, args) {
+        console.log(typeof(args.id))
         return pets.find(pet => pet.id === args.id) 
       }
     }
