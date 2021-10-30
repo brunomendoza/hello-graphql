@@ -5,6 +5,19 @@ const {
   GraphQLID
 } = require('graphql')
 
+const owners = [
+  {
+    id: "1",
+    firstName: "John",
+    lastName: "Doe",
+  },
+  {
+    id: "2",
+    firstName: "Jane",
+    lastName: "Doe",
+  },
+]
+
 const pets = [
   {
     id: "1",
@@ -32,6 +45,15 @@ const PetType = new GraphQLObjectType({
   })
 })
 
+const OwnerType = new GraphQLObjectType({
+  name: 'Owner',
+  fields: () => ({
+    id: { type: GraphQLID },
+    firstName: { type: GraphQLString },
+    lastName: { type: GraphQLString }
+  })
+})
+
 const RootQuery = new GraphQLObjectType({
   name: 'RootQueryType',
   fields: {
@@ -41,6 +63,14 @@ const RootQuery = new GraphQLObjectType({
       resolve(parent, args) {
         console.log(typeof(args.id))
         return pets.find(pet => pet.id === args.id) 
+      }
+    },
+    owner: {
+      type: OwnerType,
+      args: { id: { type: GraphQLID } },
+      resolve(parent, args) {
+        console.log(typeof(args.id))
+        return owners.find(owner => owner.id === args.id) 
       }
     }
   }
