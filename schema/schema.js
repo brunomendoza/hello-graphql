@@ -88,6 +88,21 @@ const RootQuery = new GraphQLObjectType({
         console.log(typeof(args.id))
         return owners.find(owner => owner.id === args.id) 
       }
+    },
+    owners: {
+      type: GraphQLList(OwnerType),
+      args: {},
+      resolve(parent, args) {
+        console.log(typeof(args.id))
+        return owners 
+      }
+    },
+    pets: {
+      type: GraphQLList(PetType),
+      args: {},
+      resolve(parent, args) {
+        return pets
+      }
     }
   }
 })
