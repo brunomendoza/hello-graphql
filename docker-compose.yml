@@ -1,0 +1,22 @@
+version: "3.9"
+services:
+  app:
+    build:
+      context: .
+    depends_on:
+      - db
+    ports:
+      - 5000:5000
+    volumes:
+      - ./:/app
+      
+  db:
+    image: couchdb:3.2
+    environment:
+      COUCHDB_USER: admin
+      COUCHDB_PASSWORD: admin
+    volumes:
+      - hello-graphql-db:/opt/couchdb/data
+
+volumes:
+  hello-graphql-db:
