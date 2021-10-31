@@ -11,7 +11,8 @@
   "dependencies": {
     "express": "^4.17.1",
     "express-graphql": "^0.12.0",
-    "graphql": "^15.7.2"
+    "graphql": "^15.7.2",
+    "nano": "^9.0.5"
   },
   "devDependencies": {
     "eslint": "^7.32.0",

@@ -15,6 +15,8 @@ services:
     environment:
       COUCHDB_USER: admin
       COUCHDB_PASSWORD: admin
+    ports:
+      - 5984:5984
     volumes:
       - hello-graphql-db:/opt/couchdb/data
 
