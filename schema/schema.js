@@ -11,13 +11,16 @@ const nano = require('nano')('http://admin:admin@db:5984')
 const PetType = new GraphQLObjectType({
   name: 'Pet',
   fields: () => ({
-    id: { type: GraphQLID },
+    _id: { type: GraphQLID },
     name: { type: GraphQLString },
     genre: { type: GraphQLString },
     owner: {
       type: OwnerType,
       resolve (parent, args) {
-        // return owners.find(owner => owner.id === parent.ownerId)
+        nano
+          .use('owner')
+          .get(parent._id)
+          .then(res => console.log(res))
       }
     }
   })
@@ -26,7 +29,7 @@ const PetType = new GraphQLObjectType({
 const OwnerType = new GraphQLObjectType({
   name: 'Owner',
   fields: () => ({
-    id: { type: GraphQLID },
+    _id: { type: GraphQLID },
     firstName: { type: GraphQLString },
     lastName: { type: GraphQLString },
     pets: {
@@ -45,31 +48,40 @@ const RootQuery = new GraphQLObjectType({
       type: PetType,
       args: { id: { type: GraphQLID } },
       resolve (parent, args) {
-        console.log(typeof (args.id))
-        // return pets.find(pet => pet.id === args.id)
+        return nano
+          .use('pet')
+          .get(args.id)
+          .then(res => res)
       }
     },
     owner: {
       type: OwnerType,
       args: { id: { type: GraphQLID } },
       resolve (parent, args) {
-        console.log(typeof (args.id))
-        // return owners.find(owner => owner.id === args.id)
+        return nano
+          .use('pet')
+          .get(args.id)
+          .then(res => res)
       }
     },
     owners: {
       type: GraphQLList(OwnerType),
       args: {},
       resolve (parent, args) {
-        console.log(typeof (args.id))
-        // return owners
+        return nano
+          .use('owner')
+          .list()
+          .then(res => res)
       }
     },
     pets: {
       type: GraphQLList(PetType),
       args: {},
       resolve (parent, args) {
-        // return pets
+        return nano
+          .use('pet')
+          .list({ include_docs: true })
+          .then(res => res.rows.map(row => row.doc))
       }
     }
   }
@@ -82,13 +94,14 @@ const Mutation = new GraphQLObjectType({
       type: PetType,
       args: {
         name: { type: GraphQLString },
-        genre: { type: GraphQLString }
+        genre: { type: GraphQLString },
+        owner_id: { type: GraphQLID }
       },
       resolve (parent, args) {
-        const pet = nano.use('pet')
-
-        pet.insert({ name: args.name, genre: args.genre })
-          .then(response => console.log(response))
+        return nano
+          .use('pet')
+          .insert({ name: args.name, genre: args.genre, owner_id: args.owner_id })
+          .then(res => ({ _id: res.id }))
           .catch(err => console.error(err))
       }
     },
@@ -99,10 +112,10 @@ const Mutation = new GraphQLObjectType({
         lastName: { type: GraphQLString }
       },
       resolve (parent, args) {
-        const owner = nano.use('owner')
-
-        owner.insert({ firstName: args.firstName, lastName: args.lastName })
-          .then(response => console.log(response))
+        return nano
+          .use('owner')
+          .insert({ firstName: args.firstName, lastName: args.lastName })
+          .then(res => ({ _id: res.id }))
           .catch(err => console.log(err))
       }
     }
