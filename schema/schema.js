@@ -17,10 +17,16 @@ const PetType = new GraphQLObjectType({
     owner: {
       type: OwnerType,
       resolve (parent, args) {
-        nano
+        return nano
           .use('owner')
-          .get(parent._id)
-          .then(res => console.log(res))
+          .list({ include_docs: true })
+          .then(
+            res => {
+              return res.rows
+                .map(row => row.doc)
+                .find(doc => doc._id === parent.owner_id)
+            }
+          )
       }
     }
   })
@@ -35,7 +41,16 @@ const OwnerType = new GraphQLObjectType({
     pets: {
       type: new GraphQLList(PetType),
       resolve (parent, args) {
-        // return pets.filter(pet => pet.ownerId === parent.id)
+        return nano
+          .use('pet')
+          .list({ include_docs: true })
+          .then(
+            res => {
+              return res.rows
+                .map(row => row.doc)
+                .filter(doc => doc.owner_id === parent._id)
+            }
+          )
       }
     }
   })
@@ -59,7 +74,7 @@ const RootQuery = new GraphQLObjectType({
       args: { id: { type: GraphQLID } },
       resolve (parent, args) {
         return nano
-          .use('pet')
+          .use('owner')
           .get(args.id)
           .then(res => res)
       }
