@@ -3,7 +3,8 @@ const {
   GraphQLString,
   GraphQLSchema,
   GraphQLID,
-  GraphQLList
+  GraphQLList,
+  GraphQLNonNull
 } = require('graphql')
 
 const nano = require('nano')('http://admin:admin@db:5984')
@@ -108,9 +109,9 @@ const Mutation = new GraphQLObjectType({
     addPet: {
       type: PetType,
       args: {
-        name: { type: GraphQLString },
+        name: { type: new GraphQLNonNull(GraphQLString) },
         genre: { type: GraphQLString },
-        owner_id: { type: GraphQLID }
+        owner_id: { type: new GraphQLNonNull(GraphQLID) }
       },
       resolve (parent, args) {
         return nano
@@ -123,8 +124,8 @@ const Mutation = new GraphQLObjectType({
     addOwner: {
       type: OwnerType,
       args: {
-        firstName: { type: GraphQLString },
-        lastName: { type: GraphQLString }
+        firstName: { type: new GraphQLNonNull(GraphQLString) },
+        lastName: { type: new GraphQLNonNull(GraphQLString) }
       },
       resolve (parent, args) {
         return nano
