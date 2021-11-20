@@ -17,17 +17,13 @@ const PetType = new GraphQLObjectType({
     genre: { type: GraphQLString },
     owner: {
       type: OwnerType,
-      resolve (parent, args) {
-        return nano
+      async resolve (parent, args) {
+        const res = await nano
           .use('owner')
           .list({ include_docs: true })
-          .then(
-            res => {
-              return res.rows
-                .map(row => row.doc)
-                .find(doc => doc._id === parent.owner_id)
-            }
-          )
+        return res.rows
+          .map(row => row.doc)
+          .find(doc => doc._id === parent.owner_id)
       }
     }
   })
@@ -41,17 +37,13 @@ const OwnerType = new GraphQLObjectType({
     lastName: { type: GraphQLString },
     pets: {
       type: new GraphQLList(PetType),
-      resolve (parent, args) {
-        return nano
+      async resolve (parent, args) {
+        const res = await nano
           .use('pet')
           .list({ include_docs: true })
-          .then(
-            res => {
-              return res.rows
-                .map(row => row.doc)
-                .filter(doc => doc.owner_id === parent._id)
-            }
-          )
+        return res.rows
+          .map(row => row.doc)
+          .filter(doc => doc.owner_id === parent._id)
       }
     }
   })
@@ -63,41 +55,41 @@ const RootQuery = new GraphQLObjectType({
     pet: {
       type: PetType,
       args: { id: { type: GraphQLID } },
-      resolve (parent, args) {
-        return nano
+      async resolve (parent, args) {
+        const res = await nano
           .use('pet')
           .get(args.id)
-          .then(res => res)
+        return res
       }
     },
     owner: {
       type: OwnerType,
       args: { id: { type: GraphQLID } },
-      resolve (parent, args) {
-        return nano
+      async resolve (parent, args) {
+        const res = await nano
           .use('owner')
           .get(args.id)
-          .then(res => res)
+        return res
       }
     },
     owners: {
       type: GraphQLList(OwnerType),
       args: {},
-      resolve (parent, args) {
-        return nano
+      async resolve (parent, args) {
+        const res = await nano
           .use('owner')
-          .list()
-          .then(res => res)
+          .list({ include_docs: true })
+        return res.rows.map(row => row.doc)
       }
     },
     pets: {
       type: GraphQLList(PetType),
       args: {},
-      resolve (parent, args) {
-        return nano
+      async resolve (parent, args) {
+        const res = await nano
           .use('pet')
           .list({ include_docs: true })
-          .then(res => res.rows.map(row => row.doc))
+        return res.rows.map(row => row.doc)
       }
     }
   }
